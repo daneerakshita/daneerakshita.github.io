@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rakshita Danee</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink-hot:    #FF3CAC;
+      --pink-mid:    #F472B6;
+      --peach:       #FFB347;
+      --card-border: rgba(255,255,255,0.7);
+      --featured-bg: rgba(255,255,255,0.6);
+      --card-hover:  rgba(255,255,255,0.75);
+      --list-item:   rgba(255,182,193,0.55);
+      --list-hover:  rgba(255,182,193,0.82);
+      --ink:         #1a1a1a;
+      --ink-mid:     #444;
+      --ink-light:   #888;
+      --nav-h:       62px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: var(--ink);
+      overflow-x: hidden;
+      background: #FF3CAC; /* fallback */
+    }
+
+    /* grain overlay */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    }
+
+    /* Each section gets its own gradient band */
+    section {
+      position: relative; z-index: 1;
+      scroll-margin-top: var(--nav-h);
+    }
+
+    #sec-home     { background: linear-gradient(160deg, #FF3CAC 0%, #F472B6 40%, #FFB347 80%, #FFD580 100%); min-height: 100vh; }
+    #sec-about    { background: linear-gradient(160deg, #FFD580 0%, #FFB347 30%, #F472B6 70%, #FF3CAC 100%); }
+    #sec-code     { background: linear-gradient(160deg, #FF3CAC 0%, #F472B6 50%, #FFB6C1 100%); }
+    #sec-blog     { background: linear-gradient(160deg, #FFD580 0%, #FFB347 40%, #FF9A8B 100%); }
+    #sec-videos   { background: linear-gradient(160deg, #F472B6 0%, #FF3CAC 50%, #FFB347 100%); }
+    #sec-viz      { background: linear-gradient(160deg, #FFB347 0%, #FFD580 40%, #F472B6 100%); }
+    #sec-research { background: linear-gradient(160deg, #FF3CAC 0%, #FFB6C1 50%, #FFD580 100%); }
+
+    /* ── STICKY NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 300;
+      height: var(--nav-h);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px;
+      background: rgba(255,255,255,0.22);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(255,255,255,0.35);
+    }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1rem; font-weight: 700; color: var(--ink);
+      text-decoration: none; flex-shrink: 0;
+    }
+    .logo-icon {
+      width: 28px; height: 28px; background: var(--ink);
+      border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; color: #fff;
+      font-size: 0.68rem; font-weight: 800;
+    }
+
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a {
+      font-size: 0.85rem; font-weight: 500;
+      color: var(--ink); text-decoration: none;
+      position: relative; padding-bottom: 2px;
+      transition: opacity 0.2s;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute; bottom: -2px; left: 0; right: 0;
+      height: 2px; background: var(--ink);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.22s;
+    }
+    .nav-links a:hover::after,
+    .nav-links a.active::after { transform: scaleX(1); }
+
+    /* ══════════ HOME ══════════ */
+    .home-inner {
+      min-height: calc(100vh - var(--nav-h));
+      display: flex; flex-direction: column;
+    }
+
+    .identity-row {
+      display: flex; align-items: baseline;
+      justify-content: space-between;
+      padding: 52px 48px 0;
+    }
+    .identity-word {
+      font-size: clamp(1.6rem, 3.2vw, 3.8rem);
+      font-weight: 900; color: var(--ink);
+      letter-spacing: -0.03em; line-height: 1;
+      animation: slideDown 0.5s ease both;
+    }
+    .identity-word:nth-child(2) { animation-delay: 0.08s; }
+    .identity-word:nth-child(3) { animation-delay: 0.16s; }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .home-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 28px;
+      padding: 32px 48px 52px;
+      align-items: start;
+    }
+
+    /* featured card */
+    .featured-card {
+      background: var(--featured-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px; padding: 22px;
+      backdrop-filter: blur(12px);
+      display: flex; flex-direction: column; gap: 14px;
+      box-shadow: 0 8px 32px rgba(255,60,172,0.13);
+      animation: popUp 0.5s 0.2s ease both;
+    }
+    @keyframes popUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .featured-label { font-size: 0.72rem; font-weight: 600; color: var(--ink-light); letter-spacing: 0.04em; }
+    .featured-title { font-size: 1.3rem; font-weight: 800; color: var(--ink); line-height: 1.2; letter-spacing: -0.02em; }
+    .featured-thumb {
+      width: 100%; aspect-ratio: 4/3;
+      border-radius: 12px; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .featured-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .featured-thumb-placeholder {
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, #FFB6C1, #FF69B4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem; color: rgba(255,255,255,0.7);
+    }
+    .featured-desc { font-size: 0.78rem; font-weight: 400; color: var(--ink-mid); line-height: 1.6; }
+    .github-btn {
+      display: inline-block; background: var(--ink); color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.8rem; font-weight: 600;
+      padding: 10px 22px; border-radius: 30px;
+      text-decoration: none; text-align: center;
+      align-self: center; margin-top: 4px;
+      transition: transform 0.18s, box-shadow 0.18s;
+    }
+    .github-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+
+    /* other-work panel */
+    .other-work {
+      background: var(--featured-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px; overflow: hidden;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px rgba(255,60,172,0.10);
+      animation: popUp 0.5s 0.28s ease both;
+    }
+    .other-work-header {
+      padding: 18px 22px 14px;
+      font-size: 0.88rem; font-weight: 700; color: var(--ink);
+      text-align: center; border-bottom: 1px solid rgba(255,255,255,0.5);
+    }
+    .work-list { display: flex; flex-direction: column; padding: 12px; gap: 8px; }
+    .work-item {
+      display: grid; grid-template-columns: 52px 1fr;
+      gap: 12px; align-items: center;
+      background: var(--list-item); border-radius: 10px;
+      padding: 10px 14px;
+      text-decoration: none; color: inherit;
+      transition: background 0.18s, transform 0.18s;
+    }
+    .work-item:hover { background: var(--list-hover); transform: translateX(3px); }
+    .work-thumb {
+      width: 52px; height: 40px;
+      background: rgba(255,255,255,0.5); border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0; overflow: hidden;
+    }
+    .work-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .work-title { font-size: 0.75rem; font-weight: 600; color: var(--ink); line-height: 1.3; }
+    .work-sub   { font-size: 0.65rem; font-weight: 400; color: var(--ink-mid); margin-top: 1px; }
+
+    /* right col */
+    .right-col {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 18px;
+      animation: popUp 0.5s 0.36s ease both;
+    }
+    .skill-orbs { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+    .skill-orb {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(255,255,255,0.55);
+      border: 1px solid var(--card-border); border-radius: 30px;
+      padding: 8px 16px 8px 8px;
+      font-size: 0.78rem; font-weight: 600;
+      backdrop-filter: blur(8px);
+      transition: transform 0.18s, background 0.18s; cursor: default;
+    }
+    .skill-orb:hover { transform: translateX(4px); background: rgba(255,255,255,0.78); }
+    .orb-icon {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+    .avatar-circle {
+      width: 140px; height: 140px; border-radius: 50%;
+      background: rgba(255,255,255,0.45);
+      border: 3px solid rgba(255,255,255,0.7);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 4rem;
+      box-shadow: 0 8px 32px rgba(255,60,172,0.18);
+      overflow: hidden;
+    }
+    .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ══════════ SECTION SHELL ══════════ */
+    .sec-inner { padding: 72px 48px 80px; }
+
+    .sec-title {
+      font-size: clamp(2rem, 4.5vw, 3.4rem);
+      font-weight: 900; letter-spacing: -0.03em;
+      color: var(--ink); margin-bottom: 6px;
+    }
+    .sec-subtitle {
+      font-size: 0.88rem; font-weight: 400;
+      color: var(--ink-mid); margin-bottom: 40px;
+    }
+
+    /* ══════════ ABOUT ══════════ */
+    .about-grid {
+      display: grid; grid-template-columns: 1.1fr 0.9fr;
+      gap: 40px; align-items: start;
+    }
+    .about-bio {
+      font-size: 0.9rem; font-weight: 400;
+      color: var(--ink-mid); line-height: 1.85;
+    }
+    .about-bio p + p { margin-top: 16px; }
+    .about-bio strong { color: var(--ink); font-weight: 700; }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .stat-box {
+      background: var(--featured-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px; padding: 24px;
+      backdrop-filter: blur(10px); text-align: center;
+    }
+    .stat-num { font-size: 2.4rem; font-weight: 900; color: var(--pink-hot); letter-spacing: -0.04em; }
+    .stat-lbl { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-light); margin-top: 4px; }
+
+    /* ══════════ CARDS GRID ══════════ */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 20px;
+    }
+
+    .p-card {
+      background: var(--featured-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px; padding: 22px;
+      backdrop-filter: blur(12px);
+      display: flex; flex-direction: column; gap: 12px;
+      text-decoration: none; color: inherit;
+      box-shadow: 0 4px 18px rgba(255,60,172,0.08);
+      transition: transform 0.22s, box-shadow 0.22s, background 0.18s;
+    }
+    .p-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px rgba(255,60,172,0.18);
+      background: var(--card-hover);
+    }
+    .p-card-thumb {
+      width: 100%; aspect-ratio: 16/9;
+      background: linear-gradient(135deg, #FFB6C1, #FF69B4);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; overflow: hidden;
+    }
+    .p-card-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    .p-badge {
+      display: inline-block; font-size: 0.6rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 20px; width: fit-content;
+    }
+    .badge-code  { background: rgba(82,192,122,0.2);  color: #1a7a40; }
+    .badge-blog  { background: rgba(200,130,0,0.18);  color: #7a4a00; }
+    .badge-video { background: rgba(220,60,60,0.18);  color: #8a1a1a; }
+    .badge-viz   { background: rgba(130,80,220,0.18); color: #5a1a9a; }
+    .badge-write { background: rgba(255,60,172,0.15); color: #8a0050; }
+
+    .p-card-title { font-size: 0.95rem; font-weight: 700; color: var(--ink); line-height: 1.35; letter-spacing: -0.01em; }
+    .p-card-desc  { font-size: 0.75rem; font-weight: 400; color: var(--ink-mid); line-height: 1.65; flex: 1; }
+    .p-card-meta  { font-size: 0.65rem; font-weight: 600; color: var(--ink-light); letter-spacing: 0.04em; }
+    .p-card-link  {
+      font-size: 0.72rem; font-weight: 700; color: var(--ink);
+      display: flex; align-items: center; gap: 4px;
+      padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.6);
+      transition: gap 0.18s;
+    }
+    .p-card:hover .p-card-link { gap: 8px; }
+
+    /* ══════════ WRITING LIST ══════════ */
+    .writing-list { display: flex; flex-direction: column; }
+    .w-item {
+      display: grid;
+      grid-template-columns: 32px auto 1fr auto auto;
+      align-items: center; gap: 16px;
+      padding: 18px 22px;
+      background: var(--featured-bg);
+      border: 1px solid var(--card-border);
+      margin-top: -1px;
+      text-decoration: none; color: inherit;
+      backdrop-filter: blur(10px);
+      transition: background 0.18s;
+    }
+    .w-item:first-child { border-radius: 16px 16px 0 0; }
+    .w-item:last-child  { border-radius: 0 0 16px 16px; }
+    .w-item:hover { background: var(--card-hover); }
+    .w-num   { font-size: 0.62rem; font-weight: 700; color: var(--ink-light); }
+    .w-title { font-size: 0.85rem; font-weight: 600; color: var(--ink); }
+    .w-sub   { font-size: 0.65rem; font-weight: 400; color: var(--ink-mid); margin-top: 2px; }
+    .w-date  { font-size: 0.65rem; font-weight: 600; color: var(--ink-light); white-space: nowrap; }
+    .w-arr   { color: var(--ink-light); font-size: 0.85rem; transition: transform 0.18s; }
+    .w-item:hover .w-arr { transform: translateX(4px); }
+
+    /* ══════════ FOOTER ══════════ */
+    footer {
+      position: relative; z-index: 1;
+      text-align: center; padding: 28px 48px;
+      font-size: 0.72rem; font-weight: 500;
+      color: rgba(26,26,26,0.5);
+      border-top: 1px solid rgba(255,255,255,0.35);
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(10px);
+    }
+    footer a { color: inherit; }
+
+    /* ══════════ RESPONSIVE ══════════ */
+    @media (max-width: 900px) {
+      nav { padding: 0 20px; }
+      .nav-links { gap: 16px; }
+      .nav-links a { font-size: 0.75rem; }
+      .identity-row { padding: 36px 20px 0; flex-wrap: wrap; gap: 4px; }
+      .home-grid { grid-template-columns: 1fr; padding: 24px 20px 48px; }
+      .sec-inner { padding: 52px 20px 64px; }
+      .about-grid { grid-template-columns: 1fr; }
+      .w-item { grid-template-columns: 28px 1fr auto; }
+      .w-date, .w-num { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── STICKY NAV ── -->
+<nav>
+  <a href="#sec-home" class="nav-logo">
+    <div class="logo-icon">RD</div>
+    Rakshita Danee
+  </a>
+  <ul class="nav-links">
+    <li><a href="#sec-home"     class="active">Home</a></li>
+    <li><a href="#sec-about">About Me</a></li>
+    <li><a href="#sec-code">Code</a></li>
+    <li><a href="#sec-blog">Blog</a></li>
+    <li><a href="#sec-videos">Videos</a></li>
+    <li><a href="#sec-viz">Viz</a></li>
+    <li><a href="#sec-research">Research</a></li>
+  </ul>
+</nav>
+
+<!-- ══════════════════════ HOME ══════════════════════ -->
+<section id="sec-home">
+  <div class="home-inner">
+
+    <div class="identity-row">
+      <span class="identity-word">Programmer</span>
+      <span class="identity-word">Data Scientist</span>
+      <span class="identity-word">Creator </span>
+
+    </div>
+
+    <div class="home-grid">
+
+      <!-- Featured -->
+      <div class="featured-card">
+        <div class="featured-label">Featured</div>
+        <div class="featured-title">VAE using MNIST</div>
+        <div class="featured-thumb">
+         <img src="./mnist.png" alt="VAE project"/>
+        </div>
+        <div class="featured-desc">A Variational Autoencoder built in PyTorch, trained on MNIST — exploring autoencoder architecture.</div>
+        <a href="https://github.com/daneerakshita/Diffusion" class="github-btn">Github -&gt;</a>
+      </div>
+
+      <!-- Other work -->
+      <div class="other-work">
+        <div class="other-work-header">Other work</div>
+        <div class="work-list">
+          <a href="#sec-blog" class="work-item">
+            <div class="work-thumb"><img src="./autoencoder-architecture.png" alt="VAE project"/></div>
+            <div>
+              <div class="work-title">Debí Tirar Más Fotos</div>
+              <div class="work-sub">Blog · all about VAE theory</div>
+            </div>
+          </a>
+          <a href="https://public.tableau.com/views/Hospital_Analysis_17682851960830/Dashboard2?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" class="work-item">
+            <div class="work-thumb"><img src="./hospital.jpeg" alt="VAE project"/></div>
+            <div>
+              <div class="work-title">Patient Intake Analysis</div>
+              <div class="work-sub">Viz · interactive Tableau</div>
+            </div>
+          </a>
+          <a href="#sec-videos" class="work-item">
+            <div class="work-thumb">▶<img src="./ai_cat.jpeg" alt="VAE project"/></div>
+            <div>
+              <div class="work-title">AI slop and how to deal with AI</div>
+              <div class="work-sub">Video · YouTube walkthrough</div>
+            </div>
+          </a>
+          <a href="https://rakshitadanee.blogspot.com/2025/11/correlation-and-causation.html" class="work-item">
+            <div class="work-thumb">✍️</div>
+            <div>
+              <div class="work-title">Correlation and Causation</div>
+              <div class="work-sub">Writing · data science essay</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Right col -->
+<div class="right-col" style="position:relative; padding:0; overflow:hidden; border-radius:20px; min-height:420px;">
+  <img src="./me_graphic.png" alt="Rakshita"
+       style="width:100%; height:100%; object-fit:cover; object-position:top; display:block; position:absolute; inset:0;"/>
+  <p style="position:absolute; bottom:16px; left:0; right:0;
+            font-size:0.78rem; font-weight:400; color:white; line-height:1.7;
+            font-style:italic; text-align:center; padding:0 16px;
+            text-shadow: 0 1px 6px rgba(0,0,0,0.4);">
+  </p>
+</div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ ABOUT ══════════════════════ -->
+<section id="sec-about">
+  <div class="sec-inner">
+    <div class="sec-title">About Me.</div>
+    <div class="sec-subtitle">Data scientist, accessibility advocate, and lifelong learner</div>
+    <div class="about-grid">
+      <div class="about-bio">
+        <p>I'm <strong>Rakshita Danee</strong> — a data scientist and builder driven by curiosity about how machines can understand the world, and how that understanding can be turned into tools that genuinely help people.</p>
+        <p>My work sits at the intersection of <strong>machine learning</strong> and <strong>accessibility</strong>. I believe data science is most powerful when it removes barriers — whether that means better assistive technology, more inclusive design, or clearer communication of complex ideas.</p>
+        <p>I learn in public, share everything openly, and care deeply about making the field more accessible to everyone. On this site you'll find my projects, writing, talks, and experiments — all shared freely.</p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="stat-num">12+</div><div class="stat-lbl">Projects</div></div>
+        <div class="stat-box"><div class="stat-num">8</div><div class="stat-lbl">Blog Posts</div></div>
+        <div class="stat-box"><div class="stat-num">5</div><div class="stat-lbl">Videos</div></div>
+        <div class="stat-box"><div class="stat-num">4</div><div class="stat-lbl">Visualisations</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ CODE ══════════════════════ -->
+<section id="sec-code">
+  <div class="sec-inner">
+    <div class="sec-title">Code.</div>
+    <div class="sec-subtitle">Open-source projects on GitHub</div>
+    <div class="cards-grid">
+
+      <a href="https://github.com/daneerakshita/Diffusion" class="p-card">
+        <div class="p-card-thumb">🔬</div>
+        <span class="p-badge badge-code">ML · PyTorch</span>
+        <div class="p-card-title">Variational Autoencoder on MNIST</div>
+        <div class="p-card-desc">Modular VAE with latent space visualisation, generation demo, and full documentation.</div>
+        <div class="p-card-meta">Python · ★ 24</div>
+        <span class="p-card-link">View on GitHub →</span>
+      </a>
+
+      <a href="#" class="p-card">
+        <div class="p-card-thumb">📄</div>
+        <span class="p-badge badge-code">NLP · Accessibility</span>
+        <div class="p-card-title">Plain-Language Summariser</div>
+        <div class="p-card-desc">Converts complex medical and legal docs into plain English at reading age 8–10.</div>
+        <div class="p-card-meta">Python · ★ 41</div>
+        <span class="p-card-link">View on GitHub →</span>
+      </a>
+
+      <a href="#" class="p-card">
+        <div class="p-card-thumb">📊</div>
+        <span class="p-badge badge-code">Dashboard</span>
+        <div class="p-card-title">Accessibility Dataset Explorer</div>
+        <div class="p-card-desc">Streamlit app for exploring public disability datasets with stats and downloads.</div>
+        <div class="p-card-meta">Python · ★ 18</div>
+        <span class="p-card-link">View on GitHub →</span>
+      </a>
+
+      <a href="#" class="p-card">
+        <div class="p-card-thumb">🤟</div>
+        <span class="p-badge badge-code">Computer Vision</span>
+        <div class="p-card-title">Sign Language Classifier</div>
+        <div class="p-card-desc">CNN-based real-time ASL hand sign recognition from webcam input.</div>
+        <div class="p-card-meta">Python · ★ 33</div>
+        <span class="p-card-link">View on GitHub →</span>
+      </a>
+
+      <a href="#" class="p-card">
+        <div class="p-card-thumb">🎨</div>
+        <span class="p-badge badge-code">CLI Tool</span>
+        <div class="p-card-title">Colour Contrast Checker</div>
+        <div class="p-card-desc">Tests colour pairs against WCAG AA/AAA contrast ratios from the terminal.</div>
+        <div class="p-card-meta">JavaScript · ★ 12</div>
+        <span class="p-card-link">View on GitHub →</span>
+      </a>
+
+      <a href="#" class="p-card">
+        <div class="p-card-thumb">📓</div>
+        <span class="p-badge badge-code">Notebooks</span>
+        <div class="p-card-title">EDA Notebook Templates</div>
+        <div class="p-card-desc">Reusable Jupyter notebooks for EDA — distributions, correlations, time series.</div>
+        <div class="p-card-meta">Jupyter · ★ 57</div>
+        <span class="p-card-link">View on GitHub →</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ BLOG ══════════════════════ -->
+<section id="sec-blog">
+  <div class="sec-inner">
+    <div class="sec-title">Blog.</div>
+    <div class="sec-subtitle">Writing about ML, data science, and accessibility</div>
+    <div class="cards-grid">
+
+      <a href="#" class="p-card">
+        <span class="p-badge badge-blog">Deep Learning · VAE</span>
+        <div class="p-card-title">Understanding the ELBO: A Visual Guide</div>
+        <div class="p-card-desc">Breaking down the evidence lower bound from first principles — reparameterisation, KL divergence, and why it works.</div>
+        <div class="p-card-meta">Jan 2025 · 8 min read</div>
+        <span class="p-card-link">Read →</span>
+      </a>
+
+      <a href="#" class="p-card">
+        <span class="p-badge badge-blog">Accessibility</span>
+        <div class="p-card-title">Accessibility Is Not a Feature. It's a Foundation.</div>
+        <div class="p-card-desc">Why treating accessibility as an afterthought costs more — and what data science can do to change that.</div>
+        <div class="p-card-meta">Nov 2024 · 6 min read</div>
+        <span class="p-card-link">Read →</span>
+      </a>
+
+      <a href="#" class="p-card">
+        <span class="p-badge badge-blog">Research · Data</span>
+        <div class="p-card-title">Five Datasets Every Accessibility Researcher Should Know</div>
+        <div class="p-card-desc">Underused public datasets on disability, assistive technology, and web accessibility.</div>
+        <div class="p-card-meta">Sep 2024 · 5 min read</div>
+        <span class="p-card-link">Read →</span>
+      </a>
+
+      <a href="#" class="p-card">
+        <span class="p-badge badge-blog">ML Fundamentals</span>
+        <div class="p-card-title">Backpropagation by Hand</div>
+        <div class="p-card-desc">Walking through a two-layer network's backward pass in pure NumPy — before trusting autograd.</div>
+        <div class="p-card-meta">Jul 2024 · 10 min read</div>
+        <span class="p-card-link">Read →</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ VIDEOS ══════════════════════ -->
+<section id="sec-videos">
+  <div class="sec-inner">
+    <div class="sec-title">Videos.</div>
+    <div class="sec-subtitle">Tutorials and explainers on YouTube</div>
+    <div class="cards-grid">
+
+      <a href="#" class="p-card">
+        <div class="p-card-thumb" style="background:linear-gradient(135deg,#FFB6C1,#E05252);font-size:2.2rem;">▶</div>
+        <span class="p-badge badge-video">Tutorial · 22 min</span>
+        <div class="p-card-title">Training a VAE in PyTorch from Scratch</div>
+        <div class="p-card-desc">Full walkthrough — architecture, loss function, training loop, and latent space interpolation.</div>
+        <span class="p-card-link">Watch on YouTube →</span>
+      </a>
+
+      <a href="#" class="p-card">
+        <div class="p-card-thumb" style="background:linear-gradient(135deg,#FFB6C1,#E05252);font-size:2.2rem;">▶</div>
+        <span class="p-badge badge-video">Explainer · 11 min</span>
+        <div class="p-card-title">What Is Accessibility in Tech, Really?</div>
+        <div class="p-card-desc">A concise explainer on digital accessibility and the role AI can play in improving access for everyone.</div>
+        <span class="p-card-link">Watch on YouTube →</span>
+      </a>
+
+      <a href="#" class="p-card">
+        <div class="p-card-thumb" style="background:linear-gradient(135deg,#FFB6C1,#E05252);font-size:2.2rem;">▶</div>
+        <span class="p-badge badge-video">Walkthrough · 18 min</span>
+        <div class="p-card-title">Exploratory Data Analysis in 20 Minutes</div>
+        <div class="p-card-desc">Pandas, seaborn, and a real accessibility dataset — from raw CSV to insights in one notebook.</div>
+        <span class="p-card-link">Watch on YouTube →</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ VIZ ══════════════════════ -->
+<section id="sec-viz">
+  <div class="sec-inner">
+    <div class="sec-title">Viz.</div>
+    <div class="sec-subtitle">Interactive visualisations on Tableau Public</div>
+    <div class="cards-grid">
+
+      <a href="#" class="p-card">
+        <div class="p-card-thumb" style="background:linear-gradient(135deg,#d4b0f5,#A084F0);font-size:2.2rem;">🗺</div>
+        <span class="p-badge badge-viz">Choropleth · Interactive</span>
+        <div class="p-card-title">Global Disability Prevalence Map</div>
+        <div class="p-card-desc">WHO estimates by country — filterable by impairment type and demographic group.</div>
+        <span class="p-card-link">Explore on Tableau →</span>
+      </a>
+
+      <a href="#" class="p-card">
+        <div class="p-card-thumb" style="background:linear-gradient(135deg,#d4b0f5,#A084F0);font-size:2.2rem;">◉</div>
+        <span class="p-badge badge-viz">UMAP · Interactive</span>
+        <div class="p-card-title">VAE Latent Space Explorer</div>
+        <div class="p-card-desc">2D projection of the MNIST latent space, colour-coded by digit class.</div>
+        <span class="p-card-link">Explore on Tableau →</span>
+      </a>
+
+      <a href="#" class="p-card">
+        <div class="p-card-thumb" style="background:linear-gradient(135deg,#d4b0f5,#A084F0);font-size:2.2rem;">📋</div>
+        <span class="p-badge badge-viz">WCAG Audit</span>
+        <div class="p-card-title">Web Accessibility Scorecard</div>
+        <div class="p-card-desc">Top 500 sites — WCAG compliance by sector, year, and failure category.</div>
+        <span class="p-card-link">Explore on Tableau →</span>
+      </a>
+
+      <a href="#" class="p-card">
+        <div class="p-card-thumb" style="background:linear-gradient(135deg,#d4b0f5,#A084F0);font-size:2.2rem;">📈</div>
+        <span class="p-badge badge-viz">Time Series</span>
+        <div class="p-card-title">UK Assistive Tech Usage Over Time</div>
+        <div class="p-card-desc">Adoption of screen readers, voice control, and switch access across the UK — ONS data.</div>
+        <span class="p-card-link">Explore on Tableau →</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ RESEARCH ══════════════════════ -->
+<section id="sec-research">
+  <div class="sec-inner">
+    <div class="sec-title">Research.</div>
+    <div class="sec-subtitle">Essays, reflections, and long-form writing</div>
+    <div class="writing-list">
+
+      <a href="#" class="w-item">
+        <span class="w-num">01</span>
+        <span class="p-badge badge-write">Essay</span>
+        <div><div class="w-title">On Designing for Edges, Not Averages</div><div class="w-sub">Why designing for the margins improves things for everyone · 1,200 words</div></div>
+        <span class="w-date">Mar 2025</span>
+        <span class="w-arr">→</span>
+      </a>
+
+      <a href="#" class="w-item">
+        <span class="w-num">02</span>
+        <span class="p-badge badge-write">Essay</span>
+        <div><div class="w-title">What the Curb-Cut Effect Teaches Us About ML</div><div class="w-sub">Accessibility improvements that benefit everyone · 900 words</div></div>
+        <span class="w-date">Jan 2025</span>
+        <span class="w-arr">→</span>
+      </a>
+
+      <a href="#" class="w-item">
+        <span class="w-num">03</span>
+        <span class="p-badge badge-write">Reflection</span>
+        <div><div class="w-title">A Year of Building ML Projects in Public</div><div class="w-sub">Lessons from learning out loud · 1,500 words</div></div>
+        <span class="w-date">Dec 2024</span>
+        <span class="w-arr">→</span>
+      </a>
+
+      <a href="#" class="w-item">
+        <span class="w-num">04</span>
+        <span class="p-badge badge-write">Essay</span>
+        <div><div class="w-title">Explainability Is an Accessibility Issue</div><div class="w-sub">Why interpretable ML matters for inclusion · 1,100 words</div></div>
+        <span class="w-date">Oct 2024</span>
+        <span class="w-arr">→</span>
+      </a>
+
+      <a href="#" class="w-item">
+        <span class="w-num">05</span>
+        <span class="p-badge badge-write">Reflection</span>
+        <div><div class="w-title">The Joy of Not Knowing</div><div class="w-sub">Notes on being a beginner · 700 words</div></div>
+        <span class="w-date">Aug 2024</span>
+        <span class="w-arr">→</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  Rakshita Danee · 2025 · Built openly &nbsp;·&nbsp;
+  <a href="https://github.com/daneerakshita">GitHub</a> &nbsp;·&nbsp;
+  <a href="mailto:hello@example.com">Email</a>
+</footer>
+
+<script>
+  // Highlight active nav link based on scroll position
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks  = document.querySelectorAll('.nav-links a');
+  const navH      = document.querySelector('nav').offsetHeight;
+
+  function onScroll() {
+    let current = '';
+    sections.forEach(sec => {
+      if (window.scrollY >= sec.offsetTop - navH - 40) {
+        current = sec.id;
+      }
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll(); // run once on load
+</script>
+
+</body>
+</html>
